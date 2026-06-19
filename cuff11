@@ -1,0 +1,482 @@
+-- OMEGA-RED // WELCOME + DROP MODE
+
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+local PlayerGui = LP:WaitForChild("PlayerGui")
+local RunService = game:GetService("RunService")
+local Mouse = LP:GetMouse()
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
+
+-- ========== القائمة الترحيبية ==========
+local welcomeGui = Instance.new("ScreenGui")
+welcomeGui.Name = "WelcomeScreen"
+welcomeGui.ResetOnSpawn = false
+welcomeGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+welcomeGui.Parent = PlayerGui
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 350, 0, 250)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -125)
+mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+mainFrame.BackgroundTransparency = 0.05
+mainFrame.BorderSizePixel = 0
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = mainFrame
+mainFrame.Parent = welcomeGui
+
+-- تأثير قوس قزح
+spawn(function()
+    while welcomeGui and welcomeGui.Parent do
+        local hue = tick() % 2 / 2
+        mainFrame.BorderColor3 = Color3.fromHSV(hue, 1, 1)
+        mainFrame.BorderSizePixel = 2
+        wait(0.05)
+    end
+end)
+
+-- شريط علوي
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 35)
+topBar.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
+topBar.BackgroundTransparency = 0.2
+topBar.BorderSizePixel = 0
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 15)
+topCorner.Parent = topBar
+topBar.Parent = mainFrame
+
+-- زر الإغلاق X
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 2)
+closeBtn.Text = "✖"
+closeBtn.TextScaled = true
+closeBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+closeBtn.BackgroundTransparency = 1
+closeBtn.Parent = topBar
+closeBtn.MouseButton1Click:Connect(function()
+    welcomeGui:Destroy()
+end)
+
+-- عنوان
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -60, 0, 35)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Text = "اهلا نورت"
+title.TextScaled = true
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.TextColor3 = Color3.fromRGB(0, 200, 255)
+title.BackgroundTransparency = 1
+title.Parent = topBar
+
+-- نص السكربت
+local scriptText = Instance.new("TextLabel")
+scriptText.Size = UDim2.new(0, 320, 0, 40)
+scriptText.Position = UDim2.new(0.5, -160, 0, 55)
+scriptText.Text = "سكربت CV9"
+scriptText.TextScaled = true
+scriptText.TextColor3 = Color3.fromRGB(255, 100, 0)
+scriptText.BackgroundTransparency = 1
+scriptText.Font = Enum.Font.GothamBold
+scriptText.Parent = mainFrame
+
+-- نص التيك توك
+local tiktokText = Instance.new("TextLabel")
+tiktokText.Size = UDim2.new(0, 320, 0, 30)
+tiktokText.Position = UDim2.new(0.5, -160, 0, 105)
+tiktokText.Text = "hacker_2014444"
+tiktokText.TextScaled = true
+tiktokText.TextColor3 = Color3.fromRGB(100, 200, 255)
+tiktokText.BackgroundTransparency = 1
+tiktokText.Parent = mainFrame
+
+-- نص الإعلان
+local adText = Instance.new("TextLabel")
+adText.Size = UDim2.new(0, 320, 0, 40)
+adText.Position = UDim2.new(0.5, -160, 0, 140)
+adText.Text = "هذا السكربت فقط يباع (اشتراك يومي او اسبوعي)"
+adText.TextScaled = true
+adText.TextColor3 = Color3.fromRGB(255, 200, 100)
+adText.BackgroundTransparency = 1
+adText.Parent = mainFrame
+
+-- نص المطورين
+local devText = Instance.new("TextLabel")
+devText.Size = UDim2.new(0, 320, 0, 30)
+devText.Position = UDim2.new(0.5, -160, 0, 185)
+devText.Text = "المطورين (سيبراني)"
+devText.TextScaled = true
+devText.TextColor3 = Color3.fromRGB(150, 255, 150)
+devText.BackgroundTransparency = 1
+devText.Parent = mainFrame
+
+-- زر نسخ اليوزر
+local copyBtn = Instance.new("TextButton")
+copyBtn.Size = UDim2.new(0, 200, 0, 35)
+copyBtn.Position = UDim2.new(0.5, -100, 0, 210)
+copyBtn.Text = "📋 اضغط لنسخ اليوزر 📋"
+copyBtn.TextScaled = true
+copyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 80)
+copyBtn.BorderSizePixel = 0
+local copyCorner = Instance.new("UICorner")
+copyCorner.CornerRadius = UDim.new(0, 8)
+copyCorner.Parent = copyBtn
+copyBtn.Parent = mainFrame
+
+copyBtn.MouseButton1Click:Connect(function()
+    setclipboard("hacker_20111")
+    local originalText = copyBtn.Text
+    copyBtn.Text = "✅ تم النسخ!"
+    copyBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    task.wait(1.5)
+    copyBtn.Text = originalText
+    copyBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 80)
+end)
+
+-- إخفاء القائمة الترحيبية بعد 4 ثواني أو عند الضغط على X
+task.wait(4)
+welcomeGui:Destroy()
+
+-- ========== سكربت DROP MODE ==========
+local RemoteEvents = {}
+local CuffedTargets = {}
+local CuffingActive = false
+local CuffingAllActive = false
+local Teleporting = false
+
+local function UpdateRemoteEvents()
+    RemoteEvents = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        for _, tool in pairs(plr.Backpack:GetChildren()) do
+            local re = tool:FindFirstChildWhichIsA("RemoteEvent")
+            if re then table.insert(RemoteEvents, re) end
+        end
+        if plr.Character then
+            for _, tool in pairs(plr.Character:GetChildren()) do
+                local re = tool:FindFirstChildWhichIsA("RemoteEvent")
+                if re then table.insert(RemoteEvents, re) end
+            end
+        end
+    end
+end
+
+local function ShowStatus(plr, status)
+    if not plr.Character then return end
+    local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local tag = hrp:FindFirstChild("StatusTag")
+    if not tag then
+        tag = Instance.new("BillboardGui")
+        tag.Name = "StatusTag"
+        tag.Size = UDim2.new(0, 100, 0, 50)
+        tag.StudsOffset = Vector3.new(0, 3, 0)
+        tag.AlwaysOnTop = true
+        tag.Parent = hrp
+        local label = Instance.new("TextLabel", tag)
+        label.Size = UDim2.new(1, 0, 1, 0)
+        label.BackgroundTransparency = 1
+        label.TextScaled = true
+        label.TextStrokeTransparency = 0
+        label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        label.Name = "Label"
+    end
+    local label = tag:FindFirstChild("Label")
+    if label then
+        if status == "Cuffed" then
+            label.Text = "Cuffed"
+            label.TextColor3 = Color3.fromRGB(255, 0, 0)
+        else
+            label.Text = ""
+        end
+    end
+end
+
+local function ToggleCuff(target)
+    if not target or not target.Character then return end
+    local hrp = target.Character:FindFirstChild("HumanoidRootPart") or target.Character:FindFirstChild("Torso")
+    if not hrp then return end
+    UpdateRemoteEvents()
+    local idx = table.find(CuffedTargets, target)
+    if idx then
+        for _, re in pairs(RemoteEvents) do pcall(function() re:FireServer("UnCuff") end) end
+        table.remove(CuffedTargets, idx)
+        ShowStatus(target, nil)
+    else
+        for _, re in pairs(RemoteEvents) do pcall(function() re:FireServer("Cuff", hrp) end) end
+        table.insert(CuffedTargets, target)
+        ShowStatus(target, "Cuffed")
+    end
+end
+
+local function CuffAllPlayers()
+    if CuffingAllActive then return end
+    CuffingAllActive = true
+    local playersList = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= LP and plr.Character then table.insert(playersList, plr) end
+    end
+    for _, plr in pairs(playersList) do
+        if plr and plr.Character then
+            local hrp = plr.Character:FindFirstChild("HumanoidRootPart") or plr.Character:FindFirstChild("Torso")
+            if hrp then
+                UpdateRemoteEvents()
+                for _, re in pairs(RemoteEvents) do pcall(function() re:FireServer("Cuff", hrp) end) end
+                if not table.find(CuffedTargets, plr) then
+                    table.insert(CuffedTargets, plr)
+                    ShowStatus(plr, "Cuffed")
+                end
+            end
+        end
+        task.wait()
+    end
+    CuffingAllActive = false
+end
+
+local function UncuffAllPlayers()
+    UpdateRemoteEvents()
+    for _, re in pairs(RemoteEvents) do pcall(function() re:FireServer("UnCuff") end) end
+    for _, plr in pairs(CuffedTargets) do ShowStatus(plr, nil) end
+    CuffedTargets = {}
+end
+
+local function DropCuffedPlayers()
+    if Teleporting then return end
+    Teleporting = true
+    local cuffedPlayers = {}
+    for _, plr in pairs(CuffedTargets) do
+        if plr and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            table.insert(cuffedPlayers, plr)
+        end
+    end
+    if #cuffedPlayers == 0 then Teleporting = false return end
+    local myChar = LP.Character
+    local myHrp = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    local originalCF = myHrp and myHrp.CFrame or CFrame.new(0, 5, 0)
+    local farPosition = CFrame.new(100000, 500, 100000)
+    for _, plr in pairs(cuffedPlayers) do
+        local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+        if hrp then hrp.CFrame = farPosition end
+    end
+    if myHrp then myHrp.CFrame = farPosition end
+    task.wait(0.05)
+    for _, re in pairs(RemoteEvents) do pcall(function() re:FireServer("UnCuff") end) end
+    for _, plr in pairs(cuffedPlayers) do ShowStatus(plr, nil) end
+    CuffedTargets = {}
+    if myHrp then myHrp.CFrame = originalCF end
+    Teleporting = false
+end
+
+-- إنشاء واجهة DROP MODE
+local gui = Instance.new("ScreenGui")
+gui.Name = "OmegaDropGUI"
+gui.ResetOnSpawn = false
+gui.Parent = PlayerGui
+
+local dropFrame = Instance.new("Frame")
+dropFrame.Size = UDim2.new(0, 160, 0, 260)
+dropFrame.Position = UDim2.new(0.01, 0, 0.1, 0)
+dropFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+dropFrame.BackgroundTransparency = 0.1
+dropFrame.BorderSizePixel = 0
+dropFrame.Parent = gui
+local dropCorner = Instance.new("UICorner")
+dropCorner.CornerRadius = UDim.new(0, 12)
+dropCorner.Parent = dropFrame
+
+-- شريط السحب
+local dragBar = Instance.new("Frame")
+dragBar.Size = UDim2.new(1, 0, 0, 25)
+dragBar.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+dragBar.BackgroundTransparency = 0.3
+dragBar.Parent = dropFrame
+local dragBarCorner = Instance.new("UICorner")
+dragBarCorner.CornerRadius = UDim.new(0, 12)
+dragBarCorner.Parent = dragBar
+
+local dragText = Instance.new("TextLabel")
+dragText.Size = UDim2.new(1, 0, 1, 0)
+dragText.Text = "OMEGA DROP"
+dragText.TextScaled = true
+dragText.TextColor3 = Color3.fromRGB(255, 255, 255)
+dragText.BackgroundTransparency = 1
+dragText.Parent = dragBar
+
+local hideBtn = Instance.new("TextButton")
+hideBtn.Size = UDim2.new(0, 20, 1, 0)
+hideBtn.Position = UDim2.new(1, -22, 0, 0)
+hideBtn.Text = "X"
+hideBtn.TextScaled = true
+hideBtn.BackgroundTransparency = 1
+hideBtn.Parent = dragBar
+hideBtn.MouseButton1Click:Connect(function()
+    dropFrame.Visible = not dropFrame.Visible
+end)
+
+local dropTitle = Instance.new("TextLabel")
+dropTitle.Size = UDim2.new(0, 160, 0, 20)
+dropTitle.Position = UDim2.new(0, 0, 0, 30)
+dropTitle.Text = "DROP THEM"
+dropTitle.TextScaled = true
+dropTitle.TextColor3 = Color3.fromRGB(255, 100, 0)
+dropTitle.BackgroundTransparency = 1
+dropTitle.Parent = dropFrame
+
+local cuffBtn = Instance.new("TextButton")
+cuffBtn.Size = UDim2.new(0, 140, 0, 35)
+cuffBtn.Position = UDim2.new(0.5, -70, 0, 55)
+cuffBtn.Text = "Cuff: OFF"
+cuffBtn.TextScaled = true
+cuffBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+cuffBtn.Parent = dropFrame
+local cuffBtnCorner = Instance.new("UICorner")
+cuffBtnCorner.CornerRadius = UDim.new(0, 6)
+cuffBtnCorner.Parent = cuffBtn
+
+local cuffAllBtn = Instance.new("TextButton")
+cuffAllBtn.Size = UDim2.new(0, 140, 0, 35)
+cuffAllBtn.Position = UDim2.new(0.5, -70, 0, 100)
+cuffAllBtn.Text = "CUFF ALL"
+cuffAllBtn.TextScaled = true
+cuffAllBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+cuffAllBtn.Parent = dropFrame
+local cuffAllCorner = Instance.new("UICorner")
+cuffAllCorner.CornerRadius = UDim.new(0, 6)
+cuffAllCorner.Parent = cuffAllBtn
+
+local uncuffAllBtn = Instance.new("TextButton")
+uncuffAllBtn.Size = UDim2.new(0, 140, 0, 35)
+uncuffAllBtn.Position = UDim2.new(0.5, -70, 0, 145)
+uncuffAllBtn.Text = "UNCUFF ALL"
+uncuffAllBtn.TextScaled = true
+uncuffAllBtn.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+uncuffAllBtn.Parent = dropFrame
+local uncuffCorner = Instance.new("UICorner")
+uncuffCorner.CornerRadius = UDim.new(0, 6)
+uncuffCorner.Parent = uncuffAllBtn
+
+local dropBtn = Instance.new("TextButton")
+dropBtn.Size = UDim2.new(0, 140, 0, 35)
+dropBtn.Position = UDim2.new(0.5, -70, 0, 190)
+dropBtn.Text = "DROP THEM"
+dropBtn.TextScaled = true
+dropBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+dropBtn.Parent = dropFrame
+local dropBtnCorner = Instance.new("UICorner")
+dropBtnCorner.CornerRadius = UDim.new(0, 6)
+dropBtnCorner.Parent = dropBtn
+
+local countLabel = Instance.new("TextLabel")
+countLabel.Size = UDim2.new(0, 140, 0, 25)
+countLabel.Position = UDim2.new(0.5, -70, 0, 230)
+countLabel.Text = "Cuffed: 0"
+countLabel.TextScaled = true
+countLabel.BackgroundTransparency = 0.5
+countLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+countLabel.Parent = dropFrame
+local countCorner = Instance.new("UICorner")
+countCorner.CornerRadius = UDim.new(0, 6)
+countCorner.Parent = countLabel
+
+-- سحب الواجهة
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+dragBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = dropFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        dropFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- أحداث الأزرار
+cuffBtn.MouseButton1Click:Connect(function()
+    CuffingActive = not CuffingActive
+    cuffBtn.Text = CuffingActive and "Cuff: ON" or "Cuff: OFF"
+    cuffBtn.BackgroundColor3 = CuffingActive and Color3.fromRGB(0, 255, 0) or Color3.fromRGB(255, 0, 0)
+end)
+
+cuffAllBtn.MouseButton1Click:Connect(CuffAllPlayers)
+uncuffAllBtn.MouseButton1Click:Connect(UncuffAllPlayers)
+dropBtn.MouseButton1Click:Connect(DropCuffedPlayers)
+
+-- كلبشة بالماوس
+Mouse.Button1Down:Connect(function()
+    if not CuffingActive then return end
+    local target = Mouse.Target
+    if not target then return end
+    local char = target:FindFirstAncestorOfClass("Model")
+    local plr = char and Players:GetPlayerFromCharacter(char)
+    if plr and plr ~= LP then ToggleCuff(plr) end
+end)
+
+-- تحديث العداد
+RunService.RenderStepped:Connect(function()
+    countLabel.Text = "Cuffed: " .. tostring(#CuffedTargets)
+end)
+
+print("Omega Drop Mode Active - Buttons are working")
+-- ========== ANTI-CUFF SYSTEM ==========
+local AntiCuffActive = false
+
+-- دالة فك الكلبة عن النفس (حماية)
+local function AntiCuffSelf()
+    UpdateRemoteEvents()
+    for _, re in pairs(RemoteEvents) do
+        pcall(function()
+            re:FireServer("UnCuff")
+        end)
+    end
+end
+
+-- تشغيل الحماية بشكل مستمر
+RunService.Heartbeat:Connect(function()
+    if AntiCuffActive then
+        AntiCuffSelf()
+    end
+end)
+
+-- إضافة زر Anti-Cuff إلى الواجهة (توسيع الإطار)
+dropFrame.Size = UDim2.new(0, 160, 0, 305) -- زيادة ارتفاع الإطار
+
+-- نقل الأزرار الموجودة إلى الأسفل قليلاً
+cuffBtn.Position = UDim2.new(0.5, -70, 0, 55)
+cuffAllBtn.Position = UDim2.new(0.5, -70, 0, 100)
+uncuffAllBtn.Position = UDim2.new(0.5, -70, 0, 145)
+dropBtn.Position = UDim2.new(0.5, -70, 0, 190)
+
+-- زر Anti-Cuff الجديد
+local antiCuffBtn = Instance.new("TextButton")
+antiCuffBtn.Size = UDim2.new(0, 140, 0, 35)
+antiCuffBtn.Position = UDim2.new(0.5, -70, 0, 235)
+antiCuffBtn.Text = "Anti-Cuff: OFF"
+antiCuffBtn.TextScaled = true
+antiCuffBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+antiCuffBtn.Parent = dropFrame
+local antiCuffCorner = Instance.new("UICorner")
+antiCuffCorner.CornerRadius = UDim.new(0, 6)
+antiCuffCorner.Parent = antiCuffBtn
+
+-- تحديث مكان العداد
+countLabel.Position = UDim2.new(0.5, -70, 0, 275)
+
+-- حدث زر Anti-Cuff
+antiCuffBtn.MouseButton1Click:Connect(function()
+    AntiCuffActive = not AntiCuffActive
+    antiCuffBtn.Text = AntiCuffActive and "Anti-Cuff: ON" or "Anti-Cuff: OFF"
+    antiCuffBtn.BackgroundColor3 = AntiCuffActive and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(100, 100, 100)
+end)
